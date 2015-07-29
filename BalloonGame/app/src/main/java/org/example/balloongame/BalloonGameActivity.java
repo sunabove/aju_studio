@@ -1,35 +1,24 @@
-package org.example.sudoku;
-
-import java.io.*;
-import java.text.*;
-import java.util.*;
+package org.example.balloongame;
 
 import android.app.*;
-import android.content.*;
 import android.os.*;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
 
-import android.graphics.*;
-import android.graphics.Path.*;
-
-import android.database.*;
-import android.database.sqlite.*;
-
-public class Graphics extends Activity {
+public class BalloonGameActivity extends Activity {
 
     Button animateBtn ;
-    GraphicsView graphicsView ;
+    BalloonView balloonView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_graphics);
+        setContentView(R.layout.activity_ballongame);
 
         //setContentView(new GraphicsView(this));
 
-        this.graphicsView = (GraphicsView) findViewById( R.id.myGraphicsView  );
+        this.balloonView = (BalloonView) findViewById( R.id.myGraphicsView  );
 
         this.animateBtn = (Button) findViewById( R.id.graphics_anim_btn );
 
@@ -44,15 +33,15 @@ public class Graphics extends Activity {
     public void animate() {
         final Handler handler = new Handler( );
 
-        final GraphicsView graphicsView = this.graphicsView;
-        graphicsView.paintCnt = 0 ;
-        graphicsView.animatingNow = true ;
+        final BalloonView balloonView = this.balloonView;
+        balloonView.paintCnt = 0 ;
+        balloonView.animatingNow = true ;
 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                if( graphicsView.animatingNow ) {
-                    graphicsView.invalidate();
+                if( balloonView.animatingNow ) {
+                    balloonView.invalidate();
 
                     handler.postDelayed( this, 200 );
                 }
