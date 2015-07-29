@@ -7,7 +7,7 @@ import java.util.*;
 import android.app.*;
 import android.content.*;
 import android.os.*;
-import android.util.AttributeSet;
+import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
@@ -23,11 +23,15 @@ import android.database.sqlite.*;
  */
 public class GraphicsView extends View {
 
-    private static final String QUOTE = "SUDOKU GAME" ;
+    private static final String GAME_NAME = "SUDOKU GAME" ;
     int paintCnt ;
+    boolean animatingNow ;
+    Path animationCircle ;
 
     public GraphicsView(Context context) {
         super(context);
+        this.animatingNow = false ;
+        this.animationCircle = null ;
     }
 
     public GraphicsView(Context context, AttributeSet attrs) {
@@ -107,6 +111,36 @@ public class GraphicsView extends View {
 
         canvas.drawPath(triAngle, triPaint);
 
+        // draw animation circle
+        if( this.animatingNow  ) {
+            this.animationCircle = new Path();
+            Path animationCircle = this.animationCircle;
+            int paintCnt = this.paintCnt;
+
+            int stepCount = 30;
+            int aniRadius = width < height ? width/10 : height/10 ;
+            int aniX = width*paintCnt/stepCount;
+            int aniY = height/2 ;
+
+            if( aniX > width + aniRadius ) {
+                this.animatingNow = false ;
+            }
+
+            animationCircle.addCircle( aniX, aniY, aniRadius, Path.Direction.CW);
+
+            Paint aniPaint = new Paint();
+            aniPaint.setStyle(Paint.Style.FILL);
+            aniPaint.setColor(Color.YELLOW);
+
+            canvas.drawPath(animationCircle, aniPaint);
+
+            aniPaint.setStyle(Paint.Style.STROKE);
+            aniPaint.setColor(Color.BLUE);
+            aniPaint.setStrokeWidth( 2 );
+
+            canvas.drawPath(animationCircle, aniPaint);
+        }
+
         // draw text
         Paint tPaint = new Paint();
         tPaint.setColor(color);
@@ -115,7 +149,7 @@ public class GraphicsView extends View {
 
         // text bound
         String text = "%s (%d)";
-        text = String.format( text, QUOTE, paintCnt );
+        text = String.format( text, GAME_NAME, paintCnt );
         Rect bounds = new Rect();
         tPaint.getTextBounds(text, 0, text.length(), bounds);
 
@@ -123,5 +157,30 @@ public class GraphicsView extends View {
 
        // canvas.drawTextOnPath(QUOTE, circle, 0, 20, tPaint);
 
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() != MotionEvent.ACTION_DOWN) {
+            return super.onTouchEvent(event);
+        }
+
+        float clickX = event.getX();
+        float clickY = event.getY();
+
+        String msg = "onTouchEvent: x = %f , y = %f";
+        msg = String.format(msg, clickX, clickY);
+
+
+        // show simple mssage
+        Context context = this.getContext();
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, msg, duration);
+        toast.show();
+
+        // show logcat message
+        String TAG = this.getClass().getSimpleName();
+        Log.d(TAG, msg);
+        return true;
     }
 }

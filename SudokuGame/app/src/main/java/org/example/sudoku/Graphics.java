@@ -44,16 +44,17 @@ public class Graphics extends Activity {
     public void animate() {
         final Handler handler = new Handler( );
 
+        final GraphicsView graphicsView = this.graphicsView;
+        graphicsView.paintCnt = 0 ;
+        graphicsView.animatingNow = true ;
+
         Runnable runnable = new Runnable() {
-            int animCount ;
             @Override
             public void run() {
-                if( animCount < 10  ) {
+                if( graphicsView.animatingNow ) {
                     graphicsView.invalidate();
 
-                    handler.postDelayed( this, 200 );
-
-                    animCount ++ ;
+                    handler.postDelayed( this, 200 ); 
                 }
             }
         };
