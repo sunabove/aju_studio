@@ -12,7 +12,7 @@ import android.graphics.*;
  */
 public class BalloonView extends View {
 
-    private static final String GAME_NAME = "SUDOKU GAME" ;
+    private static final String GAME_NAME = "BALLOON GAME" ;
     int paintCnt ;
     boolean animatingNow ;
     Path animationCircle ;
