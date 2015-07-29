@@ -24,6 +24,7 @@ import android.database.sqlite.*;
 public class GraphicsView extends View {
 
     private static final String QUOTE = "SUDOKU GAME" ;
+    int paintCnt ;
 
     public GraphicsView(Context context) {
         super(context);
@@ -39,6 +40,8 @@ public class GraphicsView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+
+        this.paintCnt ++ ;
 
         int width = canvas.getWidth();
         int height = canvas.getHeight();
@@ -60,6 +63,7 @@ public class GraphicsView extends View {
         Paint cPaint = new Paint();
         // file circle
         cPaint.setColor(Color.LTGRAY);
+        cPaint.setAntiAlias( true );
         cPaint.setStyle(Paint.Style.FILL);
 
         canvas.drawPath(circle, cPaint);
@@ -79,10 +83,29 @@ public class GraphicsView extends View {
 
         Paint rPaint = new Paint();
         rPaint.setStyle( Paint.Style.STROKE );
-        rPaint.setColor( Color.BLUE );
+        rPaint.setColor(Color.BLUE);
         rPaint.setStrokeWidth( 4 ); // stroke line width pixel
 
         canvas.drawRect( rect, rPaint );
+
+        // draw triangle
+        Path triAngle = new Path();
+        triAngle.moveTo(30, 60);
+        triAngle.lineTo( 60, 0  );
+        triAngle.lineTo(0, 0);
+        triAngle.close();
+
+        Paint triPaint = new Paint();
+        triPaint.setStyle(Paint.Style.FILL);
+        triPaint.setColor(Color.MAGENTA);
+
+        canvas.drawPath(triAngle, triPaint);
+
+        triPaint.setStyle(Paint.Style.STROKE);
+        triPaint.setColor(Color.BLUE);
+        triPaint.setStrokeWidth(2);
+
+        canvas.drawPath(triAngle, triPaint);
 
         // draw text
         Paint tPaint = new Paint();
@@ -91,7 +114,8 @@ public class GraphicsView extends View {
         tPaint.setTextSize( 30 );
 
         // text bound
-        String text = QUOTE ;
+        String text = "%s (%d)";
+        text = String.format( text, QUOTE, paintCnt );
         Rect bounds = new Rect();
         tPaint.getTextBounds(text, 0, text.length(), bounds);
 
