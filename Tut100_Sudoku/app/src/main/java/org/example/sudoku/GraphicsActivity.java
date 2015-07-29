@@ -21,11 +21,32 @@ import android.database.sqlite.*;
 
 public class GraphicsActivity extends Activity {
 
+    final String TAG = GraphicsActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_graphics);
-        setContentView(new GraphicsView(this));
+        boolean useLayoutFile = true ;
+        if( useLayoutFile ) {
+            setContentView(R.layout.activity_graphics);
+
+            MyGraphicsView myGraphicsView = (MyGraphicsView) findViewById( R.id.graphics_my_graphics );
+            myGraphicsView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startGame( 2 );
+                }
+            });
+        } else if( ! useLayoutFile ) {
+            setContentView(new GraphicsView(this));
+        }
+    }
+
+    private void startGame(int i) {
+        Log.d(TAG, "clicked on " + i);
+        Intent intent = new Intent(GraphicsActivity.this, GameActivity.class);
+        intent.putExtra(GameActivity.KEY_DIFFICULTY, i);
+        startActivity(intent);
     }
 
     @Override
@@ -55,8 +76,11 @@ public class GraphicsActivity extends Activity {
         public GraphicsView(Context context) {
             super(context);
         }
+
         @Override
         protected void onDraw(Canvas canvas) {
+            int width = canvas.getWidth();
+            int height = canvas.getHeight();
             int color = Color.BLUE; // solid blue
 
             // Translucent purple
@@ -66,17 +90,36 @@ public class GraphicsActivity extends Activity {
 
             // Drawing commands go here
             Path circle = new Path();
-            circle.addCircle(150, 150, 100, Direction.CW );
+            circle.addCircle(150, 150, 100, Direction.CW);
 
             String QUOTE = "Now is the time for all " +
                     "good men to come to the aid of their country." ;
 
             Paint cPaint = new Paint();
             cPaint.setColor(Color.LTGRAY);
-            Paint tPaint = new Paint();
-            cPaint.setColor( color );
-
+            cPaint.setStyle(Paint.Style.STROKE);
+            cPaint.setStyle(Paint.Style.FILL);
             canvas.drawPath(circle, cPaint);
+
+            Paint tPaint = new Paint();
+            tPaint.setColor(color);
+            final float testTextSize = 48f;
+
+            String text = QUOTE ;
+            // Get the bounds of the text, using our testTextSize.
+            tPaint.setTextSize(testTextSize);
+            Rect bounds = new Rect();
+            tPaint.getTextBounds(text, 0, text.length(), bounds);
+
+            int desiredWidth = width/2;
+
+            // Calculate the desired size as a proportion of our testTextSize.
+            float desiredTextSize = testTextSize * desiredWidth / bounds.width();
+
+            // Set the paint for that size.
+            tPaint.setTextSize(desiredTextSize);
+            canvas.drawText( text, 10, bounds.height(), tPaint );
+
             canvas.drawTextOnPath(QUOTE, circle, 0, 20, tPaint);
         }
     }
