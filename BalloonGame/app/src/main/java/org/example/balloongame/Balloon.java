@@ -52,6 +52,18 @@ public class Balloon {
         return msg;
     }
 
+    public boolean includes( float clickX, float clickY ) {
+        float dx = this.x - clickX ;
+        float dy = this.y - clickY ;
+        float radius = this.radius ;
+
+        if( dx*dx + dy*dy < radius*radius ) {
+            return true;
+        } else {
+            return false ;
+        }
+    }
+
     private static final int [] BALLOON_FILL_COLORS = { Color.RED, Color.YELLOW, Color.GRAY, Color.GREEN, Color.MAGENTA, Color.LTGRAY };
 
     public static Balloon createBalloon( int width , int height , long timeMiliPerFrame ) {
@@ -70,7 +82,7 @@ public class Balloon {
         int colorIndex = (int) ( BALLOON_FILL_COLORS.length*Math.random() );
         balloon.fillColor = BALLOON_FILL_COLORS[ colorIndex ];
         balloon.lineColor = Color.BLUE ;
-        balloon.lineWidth = 2;
+        balloon.lineWidth = 4 ;
 
         return balloon ;
     }

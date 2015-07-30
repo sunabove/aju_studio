@@ -15,18 +15,20 @@ import android.graphics.*;
  */
 public class BalloonView extends View {
 
-    private static final String GAME_NAME = "BALLOON GAME" ;
+    private static final String GAME_NAME = "BALLOON GAME";
     private static final String TAG = BalloonView.class.getSimpleName();
-    int paintCnt ;
+    int paintCnt;
     long timeMiliPerFrame;
 
-    boolean paintingNow ;
+    boolean paintingNow;
     boolean palyingGameNow;
 
-    long gameStartTime ;
-    int score ;
-    int maxScore ;
-    ArrayList<Balloon> balloons ;
+    long gameStartTime;
+    int score;
+    int maxScore;
+    ArrayList<Balloon> balloons;
+
+    BalloonGameActivity balloonGameActivity;
 
     public BalloonView(Context context) {
         super(context);
@@ -44,35 +46,35 @@ public class BalloonView extends View {
     }
 
     private void initBalloonView() {
-        this.timeMiliPerFrame = 200 ;
-        this.palyingGameNow = false ;
-        this.paintingNow = false ;
+        this.timeMiliPerFrame = 200;
+        this.palyingGameNow = false;
+        this.paintingNow = false;
         this.balloons = new ArrayList<Balloon>();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if( this.paintingNow ) {
-            return ;
+        if (this.paintingNow) {
+            return;
         } else {
-            this.paintingNow = true ;
+            this.paintingNow = true;
 
             try {
-                this.onDrawImpl( canvas );
-            } catch ( Exception e ) {
+                this.onDrawImpl(canvas);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            this.paintingNow = false ;
+            this.paintingNow = false;
         }
     }
 
-    private void onDrawImpl( Canvas canvas ) {
+    private void onDrawImpl(Canvas canvas) {
 
-        this.paintCnt ++ ;
+        this.paintCnt++;
 
-        ArrayList<Balloon> balloons = this.balloons ;
-        int paintCnt = this.paintCnt ;
+        ArrayList<Balloon> balloons = this.balloons;
+        int paintCnt = this.paintCnt;
         long timeMiliPerFrame = this.timeMiliPerFrame;
 
         Context context = this.getContext();
@@ -81,23 +83,23 @@ public class BalloonView extends View {
         int height = canvas.getHeight();
 
         // draw canvas boundary
-        if( true ) {
+        if (true) {
             int left = 1;
             int top = 0;
             int right = width;
-            int bottom = height -1 ;
-            Rect rect = new Rect( left, top, right, bottom );
+            int bottom = height - 1;
+            Rect rect = new Rect(left, top, right, bottom);
 
             Paint paint = new Paint();
-            paint.setColor( Color.BLACK );
-            paint.setStyle( Paint.Style.STROKE );
+            paint.setColor(Color.BLACK);
+            paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(1);
 
             canvas.drawRect(rect, paint);
         }
 
         // draw back gound
-        if( true ) {
+        if (true) {
             Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ballon_view_background);
 
             int bw = bitmap.getWidth();
@@ -107,40 +109,46 @@ public class BalloonView extends View {
             paint.setAntiAlias(false);
             paint.setFilterBitmap(false);
 
-            for( int by = 0 ; by < height ; by += bh ) {
-                for( int bx = 1; bx < width ; bx += bw ){
+            for (int by = 0; by < height; by += bh) {
+                for (int bx = 1; bx < width; bx += bw) {
                     canvas.drawBitmap(bitmap, bx, by, paint);
                 }
             }
         }
 
-        if( palyingGameNow ) {
+        if (palyingGameNow) {
             // clear balloons useless
             ArrayList<Balloon> clearList = new ArrayList<Balloon>();
 
-            for( Balloon balloon : balloons ) {
-                if( balloon.isClicked ) {
-                    this.score ++ ;
+            for (Balloon balloon : balloons) {
+                if (balloon.isClicked) {
+                    this.score++;
                 }
 
-                if( balloon.isClicked || ( balloon.y <= - balloon.radius ) ) {
-                    clearList.add( balloon );
+                if (balloon.isClicked || (balloon.y <= -balloon.radius)) {
+                    clearList.add(balloon);
                 }
             }
 
-            for( Balloon balloon : clearList ) {
-                balloons.remove( balloon );
+            this.maxScore = this.maxScore > this.score ? this.maxScore : this.score;
+
+            if (this.balloonGameActivity != null) {
+                this.balloonGameActivity.setGameScore(this.score, this.maxScore);
+            }
+
+            for (Balloon balloon : clearList) {
+                balloons.remove(balloon);
             }
 
             // generate ballons per three frames
-            if (paintCnt % 3 == 0) {
+            if (paintCnt % 4 == 0) {
                 Balloon newBallon = Balloon.createBalloon(width, height, timeMiliPerFrame);
                 balloons.add(newBallon);
             }
         }
 
         // draw ballons
-        if( true ) {
+        if (true) {
             long currTimeMili = System.currentTimeMillis();
 
             Paint fillPaint = new Paint();
@@ -149,25 +157,25 @@ public class BalloonView extends View {
             fillPaint.setStyle(Paint.Style.FILL);
             linePaint.setStyle(Paint.Style.STROKE);
 
-            int index = 0 ;
-            for( Balloon balloon : balloons ) {
+            int index = 0;
+            for (Balloon balloon : balloons) {
 
-                Log.d( TAG,  "[ " + index + " ] = " + balloon.toString() );
+                Log.d(TAG, "[ " + index + " ] = " + balloon.toString());
 
-                fillPaint.setColor( balloon.fillColor );
-                linePaint.setColor( balloon.lineColor );
-                Path [] shapes = balloon.getShape( currTimeMili );
-                for( Path shape : shapes ) {
-                    canvas.drawPath( shape, fillPaint );
-                    canvas.drawPath( shape, linePaint );
+                fillPaint.setColor(balloon.fillColor);
+                linePaint.setColor(balloon.lineColor);
+                Path[] shapes = balloon.getShape(currTimeMili);
+                for (Path shape : shapes) {
+                    canvas.drawPath(shape, fillPaint);
+                    canvas.drawPath(shape, linePaint);
                 }
 
-                index ++ ;
+                index++;
             }
         }
 
         // draw game information as a text
-        if( true ) {
+        if (true) {
             int color = Color.BLUE;
             // draw text
             Paint paint = new Paint();
@@ -176,9 +184,9 @@ public class BalloonView extends View {
             paint.setTextSize(30);
 
             // text info
-            int balloonsCount = balloons.size() ;
+            int balloonsCount = balloons.size();
             String text = "%s (%d) (%d)";
-            text = String.format( text, this.GAME_NAME, this.paintCnt, balloonsCount );
+            text = String.format(text, this.GAME_NAME, this.paintCnt, balloonsCount);
 
             //text bounds
             Rect bounds = new Rect();
@@ -189,14 +197,16 @@ public class BalloonView extends View {
 
     }
 
+    public void playNewGame(BalloonGameActivity balloonGameActivity) {
 
+        this.balloonGameActivity = balloonGameActivity;
 
-    public void playNewGame() {
-        final Handler handler = new Handler( );
+        final Handler handler = new Handler();
 
-        final BalloonView balloonView = this ;
-        balloonView.paintCnt = 0 ;
-        balloonView.palyingGameNow = true ;
+        final BalloonView balloonView = this;
+        balloonView.paintCnt = 0;
+        balloonView.palyingGameNow = true;
+        balloonView.score = 0;
         balloonView.gameStartTime = System.currentTimeMillis();
 
         balloonView.balloons.clear();
@@ -204,36 +214,36 @@ public class BalloonView extends View {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                if( balloonView.palyingGameNow ) {
+                if (balloonView.palyingGameNow) {
                     balloonView.invalidate();
 
-                    handler.postDelayed( this, timeMiliPerFrame);
+                    handler.postDelayed(this, timeMiliPerFrame);
                 }
             }
         };
 
-        handler.postDelayed(runnable, 0 );
+        handler.postDelayed(runnable, 0);
     }
 
     public void stopGame() {
-        final BalloonView balloonView = this ;
+        final BalloonView balloonView = this;
 
-        balloonView.palyingGameNow = false ;
+        balloonView.palyingGameNow = false;
 
         final Handler hander = new Handler();
 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                if( balloonView.paintingNow ) {
-                    hander.postDelayed( this, timeMiliPerFrame);
+                if (balloonView.paintingNow) {
+                    hander.postDelayed(this, timeMiliPerFrame);
                 } else {
                     //balloonView.balloons.clear();
                 }
             }
         };
 
-        hander.postDelayed(runnable, 0 );
+        hander.postDelayed(runnable, 0);
     }
 
     @Override
@@ -242,19 +252,24 @@ public class BalloonView extends View {
             return super.onTouchEvent(event);
         }
 
+        boolean playingGameNow = this.palyingGameNow;
         float clickX = event.getX();
         float clickY = event.getY();
 
+        // set balloon as click if it includes click coordinat
+
+        if (palyingGameNow) {
+            ArrayList<Balloon> balloons = this.balloons;
+            for (Balloon balloon : balloons) {
+                if (balloon.includes(clickX, clickY)) {
+                    balloon.isClicked = true;
+                }
+            }
+        }
+
         String msg = "onTouchEvent: x = %f , y = %f";
+
         msg = String.format(msg, clickX, clickY);
-
-
-        // show simple mssage
-        Context context = this.getContext();
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, msg, duration);
-        toast.show();
-
         // show logcat message
         String TAG = this.getClass().getSimpleName();
         Log.d(TAG, msg);

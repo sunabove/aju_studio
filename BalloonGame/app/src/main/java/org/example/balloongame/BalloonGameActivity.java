@@ -10,6 +10,8 @@ public class BalloonGameActivity extends Activity {
 
     Button newGameBtn;
     Button stopGameBtn ;
+    EditText scoreTv ;
+    EditText maxScoreTv ;
     BalloonView balloonView;
 
     @Override
@@ -23,6 +25,9 @@ public class BalloonGameActivity extends Activity {
 
         this.newGameBtn = (Button) findViewById( R.id.game_new_game );
         this.stopGameBtn = (Button) findViewById( R.id.game_stop_game );
+
+        this.scoreTv = (EditText) findViewById( R.id.game_score );
+        this.maxScoreTv = (EditText) findViewById( R.id.game_max_score ) ;
 
         this.newGameBtn.setOnClickListener(new OnClickListener() {
             @Override
@@ -41,16 +46,21 @@ public class BalloonGameActivity extends Activity {
 
     public void playNewGame() {
         this.newGameBtn.setEnabled( false );
-        this.stopGameBtn.setEnabled( true );
+        this.stopGameBtn.setEnabled(true);
 
-        this.balloonView.playNewGame();
+        this.balloonView.playNewGame( this );
     }
 
     public void stopGame() {
         this.balloonView.stopGame();
 
         this.newGameBtn.setEnabled( true );
-        this.stopGameBtn.setEnabled( false );
+        this.stopGameBtn.setEnabled(false);
     }
+
+     public void setGameScore( int score , int maxScore ) {
+         this.scoreTv.setText( "" + score );
+         this.maxScoreTv.setText( "" + maxScore );
+     }
 
 }
