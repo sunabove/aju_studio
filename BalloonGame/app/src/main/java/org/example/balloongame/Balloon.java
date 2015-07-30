@@ -110,7 +110,7 @@ public class Balloon {
         return false ;
     }
 
-    private static final int [] BALLOON_FILL_COLORS = { Color.RED, Color.YELLOW, Color.LTGRAY, Color.GREEN, Color.MAGENTA, Color.CYAN };
+    private static final int [] BALLOON_FILL_COLORS = { Color.RED, Color.YELLOW, Color.GREEN, Color.MAGENTA, Color.CYAN };
 
     public static Balloon createBalloon( int width , int height , long timeMiliPerFrame ) {
 
