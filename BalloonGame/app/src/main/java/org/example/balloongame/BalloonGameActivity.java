@@ -48,19 +48,24 @@ public class BalloonGameActivity extends Activity {
         this.newGameBtn.setEnabled( false );
         this.stopGameBtn.setEnabled(true);
 
-        this.balloonView.playNewGame( this );
+        this.balloonView.playNewGame(this);
     }
 
     public void stopGame() {
         this.balloonView.stopGame();
 
         this.newGameBtn.setEnabled( true );
-        this.stopGameBtn.setEnabled(false);
+        this.stopGameBtn.setEnabled( false );
     }
 
      public void setGameScore( int score , int maxScore ) {
-         this.scoreTv.setText( "" + score );
-         this.maxScoreTv.setText( "" + maxScore );
+         this.scoreTv.setText("" + score);
+         this.maxScoreTv.setText("" + maxScore);
+     }
+
+     public void setGameEnded( ) {
+         this.newGameBtn.setEnabled( true );
+         this.stopGameBtn.setEnabled( false);
      }
 
 }

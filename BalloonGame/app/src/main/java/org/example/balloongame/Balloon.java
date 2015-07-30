@@ -2,7 +2,10 @@ package org.example.balloongame;
 
 import android.graphics.*;
 
+import java.util.ArrayList;
+
 public class Balloon {
+
     float x;
     float y;
     float radius;
@@ -90,6 +93,21 @@ public class Balloon {
         float dr = this.radius + balloon.radius ;
 
         return dx*dx + dy*dy <= dr*dr ;
+    }
+
+    /**
+     * returns if the ball is sticked
+     * @param balloons
+     * @return
+     */
+    public boolean isSticked( ArrayList<Balloon> balloons ) {
+
+        for( Balloon balloon : balloons ) {
+            if( this.isSticked( balloon )) {
+                return true ;
+            }
+        }
+        return false ;
     }
 
     private static final int [] BALLOON_FILL_COLORS = { Color.RED, Color.YELLOW, Color.LTGRAY, Color.GREEN, Color.MAGENTA, Color.CYAN };

@@ -77,6 +77,8 @@ public class BalloonView extends View {
         this.paintCnt++;
 
         ArrayList<Balloon> balloons = this.balloons;
+        ArrayList<Balloon> stickList = this.stickList;
+
         int paintCnt = this.paintCnt;
         long timeMiliPerFrame = this.timeMiliPerFrame;
 
@@ -143,16 +145,68 @@ public class BalloonView extends View {
                 balloons.remove(balloon);
             }
 
+            // build stick list
+            ArrayList<Balloon> zeroList = new ArrayList<Balloon>();
+
+            for (Balloon balloon : balloons) {
+                if( balloon.y <= balloon.radius ) {
+                    balloon.isSticked = true ;
+                    balloon.fillColor = Color.LTGRAY ;
+                    balloon.lineColor = Color.BLACK ;
+
+                    zeroList.add( balloon );
+                }
+            }
+
+            stickList.addAll( zeroList );
+
+            for( int i = 0; i < balloons.size() ; ) {
+                Balloon balloon = balloons.get( i );
+                if( balloon.isSticked( stickList )) {
+                    balloon.isSticked = true ;
+                    balloon.fillColor = Color.LTGRAY ;
+                    balloon.lineColor = Color.BLACK ;
+
+                    stickList.add( balloon );
+                    balloons.remove( i );
+                } else {
+                    i ++ ;
+                }
+            }
+            // end of building stick list
+
+            // check whether if this game ended
+            float maxBalloonHeight = 0 ;
+            for( Balloon balloon : stickList ) {
+                maxBalloonHeight = balloon.y > maxBalloonHeight ? balloon.y : maxBalloonHeight ;
+            }
+
+            if( maxBalloonHeight > 0 ) {
+                if( stickList.size() > 0 ) {
+                    Balloon firstBalloon = stickList.get( 0 );
+                    if( maxBalloonHeight >= height - firstBalloon.radius ) {
+                        this.palyingGameNow = false ;
+
+                        if( this.balloonGameActivity != null ) {
+                            this.balloonGameActivity.setGameEnded();
+                        }
+                    }
+                }
+            }
+            // end of checking whter if this game ended
+
             // generate ballons per three frames
-            if (paintCnt % 4 == 0) {
+            if ( this.palyingGameNow && paintCnt % 4 == 0) {
                 Balloon newBallon = Balloon.createBalloon(width, height, timeMiliPerFrame);
                 balloons.add(newBallon);
             }
+
         }
 
         // draw ballons
         if (true) {
-            this.paintBalloonList( balloons, canvas );
+            this.paintBalloonList(stickList, canvas);
+            this.paintBalloonList(balloons, canvas);
         }
 
         // draw game information as a text
@@ -188,7 +242,7 @@ public class BalloonView extends View {
             paint.setTextSize(20);
 
 
-            paint.setColor( Color.RED );
+            paint.setColor(Color.RED);
             paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
 
             //text bounds
@@ -221,7 +275,7 @@ public class BalloonView extends View {
 
             Log.d(TAG, "[ " + index + " ] = " + balloon.toString());
 
-            fillPaint.setColor(balloon.fillColor);
+            fillPaint.setColor( balloon.fillColor );
             linePaint.setColor( balloon.lineColor );
             linePaint.setStrokeWidth( balloon.lineWidth );
             Path[] shapes = balloon.getShape( currTimeMili );
@@ -247,6 +301,7 @@ public class BalloonView extends View {
         balloonView.gameStartTime = System.currentTimeMillis();
 
         balloonView.balloons.clear();
+        balloonView.stickList.clear();
 
         Runnable runnable = new Runnable() {
             @Override
@@ -275,7 +330,7 @@ public class BalloonView extends View {
                 if (balloonView.paintingNow) {
                     hander.postDelayed(this, timeMiliPerFrame);
                 } else {
-                    //balloonView.balloons.clear();
+                    // do nothing at current
                 }
             }
         };
