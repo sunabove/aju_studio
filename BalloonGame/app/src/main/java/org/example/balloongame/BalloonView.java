@@ -115,11 +115,13 @@ public class BalloonView extends View {
         }
 
         if( palyingGameNow ) {
-
-            if( paintCnt %3 == 0 ) {
+            if (paintCnt % 3 == 0) {
                 Balloon newBallon = Balloon.createBalloon(width, height, timeMiliPerFrame);
-                balloons.add( newBallon );
+                balloons.add(newBallon);
             }
+        }
+
+        if( true ) {
 
             long currTimeMili = System.currentTimeMillis();
 
@@ -176,6 +178,8 @@ public class BalloonView extends View {
         balloonView.palyingGameNow = true ;
         balloonView.gameStartTime = System.currentTimeMillis();
 
+        balloonView.balloons.clear();
+
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -193,6 +197,8 @@ public class BalloonView extends View {
     public void stopGame() {
         final BalloonView balloonView = this ;
 
+        balloonView.palyingGameNow = false ;
+
         final Handler hander = new Handler();
 
         Runnable runnable = new Runnable() {
@@ -201,8 +207,7 @@ public class BalloonView extends View {
                 if( balloonView.paintingNow ) {
                     hander.postDelayed( this, timeMiliPerFrame);
                 } else {
-                    balloonView.palyingGameNow = false ;
-                    balloonView.balloons.clear();
+                    //balloonView.balloons.clear();
                 }
             }
         };
