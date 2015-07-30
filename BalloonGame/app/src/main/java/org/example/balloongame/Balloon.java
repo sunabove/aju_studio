@@ -8,6 +8,7 @@ public class Balloon {
     float radius;
 
     boolean isClicked ;
+    boolean isSticked ;
 
     int fillColor ;
     int lineColor ;
@@ -25,12 +26,19 @@ public class Balloon {
         this.lineWidth = 2 ;
 
         this.isClicked = false ;
+        this.isSticked = false ;
     }
 
     public Path[] getShape(long currTimeMili) {
 
+        if( this.isSticked && this.circle != null ) {
+            Path[] shapes = { this.circle };
+            return shapes ;
+        }
+
         long timeDiffMili = currTimeMili - timeMili ;
-        this.y = this.y + (vy_pixel_per_sec*(timeDiffMili/1000.0F) );
+
+        this.y = this.y + (vy_pixel_per_sec * (timeDiffMili / 1000.0F));
 
         Path circle = new Path();
 
@@ -52,6 +60,12 @@ public class Balloon {
         return msg;
     }
 
+    /**
+     * returns if this ball include the clicked coordinate
+     * @param clickX
+     * @param clickY
+     * @return
+     */
     public boolean includes( float clickX, float clickY ) {
         float dx = this.x - clickX ;
         float dy = this.y - clickY ;
@@ -64,7 +78,21 @@ public class Balloon {
         }
     }
 
-    private static final int [] BALLOON_FILL_COLORS = { Color.RED, Color.YELLOW, Color.GRAY, Color.GREEN, Color.MAGENTA, Color.LTGRAY };
+    /**
+     * returns if the ball is sticked
+     * @param balloon
+     * @return
+     */
+    public boolean isSticked( Balloon balloon ) {
+        float dx = this.x - balloon.x ;
+        float dy = this.y - balloon.y ;
+
+        float dr = this.radius + balloon.radius ;
+
+        return dx*dx + dy*dy <= dr*dr ;
+    }
+
+    private static final int [] BALLOON_FILL_COLORS = { Color.RED, Color.YELLOW, Color.LTGRAY, Color.GREEN, Color.MAGENTA, Color.CYAN };
 
     public static Balloon createBalloon( int width , int height , long timeMiliPerFrame ) {
 
@@ -73,16 +101,20 @@ public class Balloon {
         int radius = width < height ? width / 8 : height / 8;
 
         int x = (int)( radius + (width - 2*radius)*Math.random() );
+        float vMin = height/12 ;
+        float vMax = height/5 ;
+        float vy_pixel_per_sec = - (float)( vMin + (vMax - vMin)*Math.random() ) ;
+
         balloon.x = x;
         balloon.y = height + radius ;
         balloon.radius = radius ;
         balloon.timeMili = System.currentTimeMillis();
-        balloon.vy_pixel_per_sec = - height/4;
+        balloon.vy_pixel_per_sec = vy_pixel_per_sec ;
 
         int colorIndex = (int) ( BALLOON_FILL_COLORS.length*Math.random() );
         balloon.fillColor = BALLOON_FILL_COLORS[ colorIndex ];
         balloon.lineColor = Color.BLUE ;
-        balloon.lineWidth = 4 ;
+        balloon.lineWidth = 2 ;
 
         return balloon ;
     }

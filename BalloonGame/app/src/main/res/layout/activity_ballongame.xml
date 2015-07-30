@@ -13,18 +13,18 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center">
+        android:gravity="left|center_vertical|center">
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" New Game "
+            android:text=" New "
             android:id="@+id/game_new_game"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Stop Game "
+            android:text="Stop "
             android:id="@+id/game_stop_game"/>
 
         <TextView
@@ -33,43 +33,50 @@
             android:text="   "
             android:id="@+id/textView3"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text=" Score : "
-            android:id="@+id/textView"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right">
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
-            android:id="@+id/game_score"
-            android:layout_weight="1"
-            android:editable="false"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:enabled="false"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text=" Score : "
+                android:id="@+id/textView"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text=" Max : "
-            android:id="@+id/textView2"/>
+            <EditText
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/game_score"
+                android:layout_weight="1"
+                android:editable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:enabled="false"/>
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
-            android:id="@+id/game_max_score"
-            android:layout_weight="1"
-            android:editable="false"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:enabled="false"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text=" Max : "
+                android:id="@+id/textView2"/>
+
+            <EditText
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/game_max_score"
+                android:layout_weight="1"
+                android:editable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:enabled="false"/>
+        </LinearLayout>
 
     </LinearLayout>
 

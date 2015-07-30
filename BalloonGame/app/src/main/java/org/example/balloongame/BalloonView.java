@@ -4,6 +4,7 @@ import java.util.*;
 
 import android.content.*;
 import android.os.*;
+import android.support.annotation.ArrayRes;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
@@ -27,6 +28,7 @@ public class BalloonView extends View {
     int score;
     int maxScore;
     ArrayList<Balloon> balloons;
+    ArrayList<Balloon> stickList ;
 
     BalloonGameActivity balloonGameActivity;
 
@@ -50,6 +52,7 @@ public class BalloonView extends View {
         this.palyingGameNow = false;
         this.paintingNow = false;
         this.balloons = new ArrayList<Balloon>();
+        this.stickList = new ArrayList<Balloon>();
     }
 
     @Override
@@ -149,33 +152,11 @@ public class BalloonView extends View {
 
         // draw ballons
         if (true) {
-            long currTimeMili = System.currentTimeMillis();
-
-            Paint fillPaint = new Paint();
-            Paint linePaint = new Paint();
-
-            fillPaint.setStyle(Paint.Style.FILL);
-            linePaint.setStyle(Paint.Style.STROKE);
-
-            int index = 0;
-            for (Balloon balloon : balloons) {
-
-                Log.d(TAG, "[ " + index + " ] = " + balloon.toString());
-
-                fillPaint.setColor(balloon.fillColor);
-                linePaint.setColor(balloon.lineColor);
-                Path[] shapes = balloon.getShape(currTimeMili);
-                for (Path shape : shapes) {
-                    canvas.drawPath(shape, fillPaint);
-                    canvas.drawPath(shape, linePaint);
-                }
-
-                index++;
-            }
+            this.paintBalloonList( balloons, canvas );
         }
 
         // draw game information as a text
-        if (true) {
+        if (!palyingGameNow) {
             int color = Color.BLUE;
             // draw text
             Paint paint = new Paint();
@@ -185,8 +166,8 @@ public class BalloonView extends View {
 
             // text info
             int balloonsCount = balloons.size();
-            String text = "%s (%d) (%d)";
-            text = String.format(text, this.GAME_NAME, this.paintCnt, balloonsCount);
+            String text = "%s ver. 1.0";
+            text = String.format(text, this.GAME_NAME);
 
             //text bounds
             Rect bounds = new Rect();
@@ -195,6 +176,62 @@ public class BalloonView extends View {
             canvas.drawText(text, width / 2 - bounds.width() / 2, height / 2 + bounds.height() / 2, paint);
         }
 
+        // draw game status
+        if (true) {
+            // text info
+            int balloonsCount = balloons.size();
+            String text = "frame count = %d, balloon count = %d";
+            text = String.format(text, paintCnt, balloonsCount);
+
+            // draw text
+            Paint paint = new Paint();
+            paint.setTextSize(20);
+
+
+            paint.setColor( Color.RED );
+            paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+
+            //text bounds
+            Rect bounds = new Rect();
+            paint.getTextBounds(text, 0, text.length(), bounds);
+
+            int bw = bounds.width();
+            int bh = bounds.height();
+            int mx = 20 , my = 10 ;
+
+            paint.setColor(Color.WHITE);
+
+            canvas.drawText(text, width - bw - mx, bh + my, paint);
+        }
+
+    }
+
+    private void paintBalloonList( ArrayList<Balloon> balloons, Canvas canvas ){
+        long currTimeMili = System.currentTimeMillis();
+
+        Paint fillPaint = new Paint();
+        Paint linePaint = new Paint();
+
+        fillPaint.setStyle(Paint.Style.FILL);
+        linePaint.setStyle(Paint.Style.STROKE);
+        linePaint.setAntiAlias( true );
+
+        int index = 0;
+        for (Balloon balloon : balloons) {
+
+            Log.d(TAG, "[ " + index + " ] = " + balloon.toString());
+
+            fillPaint.setColor(balloon.fillColor);
+            linePaint.setColor( balloon.lineColor );
+            linePaint.setStrokeWidth( balloon.lineWidth );
+            Path[] shapes = balloon.getShape( currTimeMili );
+            for (Path shape : shapes) {
+                canvas.drawPath(shape, fillPaint);
+                canvas.drawPath(shape, linePaint);
+            }
+
+            index++;
+        }
     }
 
     public void playNewGame(BalloonGameActivity balloonGameActivity) {
