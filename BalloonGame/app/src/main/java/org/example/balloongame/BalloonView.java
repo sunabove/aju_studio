@@ -122,8 +122,8 @@ public class BalloonView extends View {
         }
 
         if (palyingGameNow) {
-            // clear balloons useless
-            ArrayList<Balloon> clearList = new ArrayList<Balloon>();
+            // clear balloons clicked
+            ArrayList<Balloon> clicedList = new ArrayList<Balloon>();
 
             for (Balloon balloon : balloons) {
                 if (balloon.isClicked) {
@@ -131,7 +131,7 @@ public class BalloonView extends View {
                 }
 
                 if (balloon.isClicked || (balloon.y <= -balloon.radius)) {
-                    clearList.add(balloon);
+                    clicedList.add(balloon);
                 }
             }
 
@@ -141,7 +141,7 @@ public class BalloonView extends View {
                 this.balloonGameActivity.setGameScore(this.score, this.maxScore);
             }
 
-            for (Balloon balloon : clearList) {
+            for (Balloon balloon : clicedList) {
                 balloons.remove(balloon);
             }
 
