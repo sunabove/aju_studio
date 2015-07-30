@@ -7,6 +7,8 @@ public class Balloon {
     float y;
     float radius;
 
+    boolean isClicked ;
+
     int fillColor ;
     int lineColor ;
     int lineWidth ;
@@ -21,6 +23,8 @@ public class Balloon {
         this.fillColor = Color.RED ;
         this.lineColor = Color.BLUE ;
         this.lineWidth = 2 ;
+
+        this.isClicked = false ;
     }
 
     public Path[] getShape(long currTimeMili) {
@@ -54,9 +58,9 @@ public class Balloon {
 
         Balloon balloon = new Balloon();
 
-        int radius = width < height ? width / 5 : height / 5;
+        int radius = width < height ? width / 8 : height / 8;
 
-        int x = (int)( width*Math.random() );
+        int x = (int)( radius + (width - 2*radius)*Math.random() );
         balloon.x = x;
         balloon.y = height + radius ;
         balloon.radius = radius ;

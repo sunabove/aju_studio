@@ -115,14 +115,32 @@ public class BalloonView extends View {
         }
 
         if( palyingGameNow ) {
+            // clear balloons useless
+            ArrayList<Balloon> clearList = new ArrayList<Balloon>();
+
+            for( Balloon balloon : balloons ) {
+                if( balloon.isClicked ) {
+                    this.score ++ ;
+                }
+
+                if( balloon.isClicked || ( balloon.y <= - balloon.radius ) ) {
+                    clearList.add( balloon );
+                }
+            }
+
+            for( Balloon balloon : clearList ) {
+                balloons.remove( balloon );
+            }
+
+            // generate ballons per three frames
             if (paintCnt % 3 == 0) {
                 Balloon newBallon = Balloon.createBalloon(width, height, timeMiliPerFrame);
                 balloons.add(newBallon);
             }
         }
 
+        // draw ballons
         if( true ) {
-
             long currTimeMili = System.currentTimeMillis();
 
             Paint fillPaint = new Paint();
@@ -131,13 +149,12 @@ public class BalloonView extends View {
             fillPaint.setStyle(Paint.Style.FILL);
             linePaint.setStyle(Paint.Style.STROKE);
 
-
             int index = 0 ;
             for( Balloon balloon : balloons ) {
 
                 Log.d( TAG,  "[ " + index + " ] = " + balloon.toString() );
 
-                fillPaint.setColor(balloon.fillColor );
+                fillPaint.setColor( balloon.fillColor );
                 linePaint.setColor( balloon.lineColor );
                 Path [] shapes = balloon.getShape( currTimeMili );
                 for( Path shape : shapes ) {
@@ -158,8 +175,12 @@ public class BalloonView extends View {
             // text size
             paint.setTextSize(30);
 
-            // text bound
-            String text = this.GAME_NAME + " " + paintCnt ;
+            // text info
+            int balloonsCount = balloons.size() ;
+            String text = "%s (%d) (%d)";
+            text = String.format( text, this.GAME_NAME, this.paintCnt, balloonsCount );
+
+            //text bounds
             Rect bounds = new Rect();
             paint.getTextBounds(text, 0, text.length(), bounds);
 
