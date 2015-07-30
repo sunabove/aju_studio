@@ -18,12 +18,63 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Animate"
-            android:id="@+id/graphics_anim_btn"/>
+            android:text=" New Game "
+            android:id="@+id/game_new_game"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stop Game "
+            android:id="@+id/game_stop_game"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="   "
+            android:id="@+id/textView3"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text=" Score : "
+            android:id="@+id/textView"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/game_score"
+            android:layout_weight="1"
+            android:editable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:enabled="false"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text=" Max : "
+            android:id="@+id/textView2"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/game_max_score"
+            android:layout_weight="1"
+            android:editable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:enabled="false"/>
+
     </LinearLayout>
 
     <org.example.balloongame.BalloonView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/myGraphicsView"/>
+        android:id="@+id/game_balloon_view"/>
 </LinearLayout>

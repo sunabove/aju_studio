@@ -8,7 +8,8 @@ import android.widget.*;
 
 public class BalloonGameActivity extends Activity {
 
-    Button animateBtn ;
+    Button newGameBtn;
+    Button stopGameBtn ;
     BalloonView balloonView;
 
     @Override
@@ -18,37 +19,38 @@ public class BalloonGameActivity extends Activity {
 
         //setContentView(new GraphicsView(this));
 
-        this.balloonView = (BalloonView) findViewById( R.id.myGraphicsView  );
+        this.balloonView = (BalloonView) findViewById( R.id.game_balloon_view  );
 
-        this.animateBtn = (Button) findViewById( R.id.graphics_anim_btn );
+        this.newGameBtn = (Button) findViewById( R.id.game_new_game );
+        this.stopGameBtn = (Button) findViewById( R.id.game_stop_game );
 
-        this.animateBtn.setOnClickListener(new OnClickListener() {
+        this.newGameBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                animate();
+                playNewGame();
+            }
+        });
+
+        this.stopGameBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopGame();
             }
         });
     }
 
-    public void animate() {
-        final Handler handler = new Handler( );
+    public void playNewGame() {
+        this.newGameBtn.setEnabled( false );
+        this.stopGameBtn.setEnabled( true );
 
-        final BalloonView balloonView = this.balloonView;
-        balloonView.paintCnt = 0 ;
-        balloonView.animatingNow = true ;
+        this.balloonView.playNewGame();
+    }
 
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if( balloonView.animatingNow ) {
-                    balloonView.invalidate();
+    public void stopGame() {
+        this.balloonView.stopGame();
 
-                    handler.postDelayed( this, 200 );
-                }
-            }
-        };
-
-        handler.postDelayed( runnable, 100 );
+        this.newGameBtn.setEnabled( true );
+        this.stopGameBtn.setEnabled( false );
     }
 
 }

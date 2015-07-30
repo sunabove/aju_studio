@@ -1,6 +1,9 @@
 package org.example.balloongame;
 
+import java.util.*;
+
 import android.content.*;
+import android.os.*;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
@@ -13,28 +16,64 @@ import android.graphics.*;
 public class BalloonView extends View {
 
     private static final String GAME_NAME = "BALLOON GAME" ;
+    private static final String TAG = BalloonView.class.getSimpleName();
     int paintCnt ;
-    boolean animatingNow ;
-    Path animationCircle ;
+    long timeMiliPerFrame;
+
+    boolean paintingNow ;
+    boolean palyingGameNow;
+
+    long gameStartTime ;
+    int score ;
+    int maxScore ;
+    ArrayList<Balloon> balloons ;
 
     public BalloonView(Context context) {
         super(context);
-        this.animatingNow = false ;
-        this.animationCircle = null ;
+        this.initBalloonView();
     }
 
     public BalloonView(Context context, AttributeSet attrs) {
         super(context, attrs, 0);
+        this.initBalloonView();
     }
 
     public BalloonView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.initBalloonView();
+    }
+
+    private void initBalloonView() {
+        this.timeMiliPerFrame = 200 ;
+        this.palyingGameNow = false ;
+        this.paintingNow = false ;
+        this.balloons = new ArrayList<Balloon>();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if( this.paintingNow ) {
+            return ;
+        } else {
+            this.paintingNow = true ;
+
+            try {
+                this.onDrawImpl( canvas );
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
+
+            this.paintingNow = false ;
+        }
+    }
+
+    private void onDrawImpl( Canvas canvas ) {
 
         this.paintCnt ++ ;
+
+        ArrayList<Balloon> balloons = this.balloons ;
+        int paintCnt = this.paintCnt ;
+        long timeMiliPerFrame = this.timeMiliPerFrame;
 
         Context context = this.getContext();
 
@@ -54,7 +93,7 @@ public class BalloonView extends View {
             paint.setStyle( Paint.Style.STROKE );
             paint.setStrokeWidth(1);
 
-            canvas.drawRect( rect, paint );
+            canvas.drawRect(rect, paint);
         }
 
         // draw back gound
@@ -75,113 +114,100 @@ public class BalloonView extends View {
             }
         }
 
-        int color = Color.BLUE; // solid blue
-        // Translucent purple
-        color = Color.argb(127, 255, 0, 255);
-        color = getResources().getColor(R.color.mycolor);
+        if( palyingGameNow ) {
 
-        // draw circle
-        int radius = width < height ? width/2 : height/2;
-        int cx = width/2 ;
-        int cy = height/2;
-
-        Path circle ;
-        circle = new Path();
-        circle.addCircle( cx, cy, radius, Path.Direction.CW);
-
-        Paint cPaint = new Paint();
-        // file circle
-        cPaint.setColor(Color.LTGRAY);
-        cPaint.setAntiAlias( true );
-        cPaint.setStyle(Paint.Style.FILL);
-
-        canvas.drawPath(circle, cPaint);
-
-        // draw circle line
-        cPaint.setColor(Color.RED);
-        cPaint.setStyle(Paint.Style.STROKE);
-
-        canvas.drawPath(circle, cPaint);
-
-        // draw rect
-        int left = width/2 - width/4;
-        int top = height/2 - height/4;
-        int right = width/2 + width/4;
-        int bottom = height/2 + height/4;
-        Rect rect = new Rect( left, top, right, bottom );
-
-        Paint rPaint = new Paint();
-        rPaint.setStyle( Paint.Style.STROKE );
-        rPaint.setColor(Color.BLUE);
-        rPaint.setStrokeWidth( 4 ); // stroke line width pixel
-
-        canvas.drawRect( rect, rPaint );
-
-        // draw triangle
-        Path triAngle = new Path();
-        triAngle.moveTo(30, 60);
-        triAngle.lineTo( 60, 0  );
-        triAngle.lineTo(0, 0);
-        triAngle.close();
-
-        Paint triPaint = new Paint();
-        triPaint.setStyle(Paint.Style.FILL);
-        triPaint.setColor(Color.MAGENTA);
-
-        canvas.drawPath(triAngle, triPaint);
-
-        triPaint.setStyle(Paint.Style.STROKE);
-        triPaint.setColor(Color.BLUE);
-        triPaint.setStrokeWidth(2);
-
-        canvas.drawPath(triAngle, triPaint);
-
-        // draw animation circle
-        if( this.animatingNow  ) {
-            this.animationCircle = new Path();
-            Path animationCircle = this.animationCircle;
-            int paintCnt = this.paintCnt;
-
-            int stepCount = 30;
-            int aniRadius = width < height ? width/10 : height/10 ;
-            int aniX = width*paintCnt/stepCount;
-            int aniY = height/2 ;
-
-            if( aniX > width + aniRadius ) {
-                this.animatingNow = false ;
+            if( paintCnt %3 == 0 ) {
+                Balloon newBallon = Balloon.createBalloon(width, height, timeMiliPerFrame);
+                balloons.add( newBallon );
             }
 
-            animationCircle.addCircle( aniX, aniY, aniRadius, Path.Direction.CW);
+            long currTimeMili = System.currentTimeMillis();
 
-            Paint aniPaint = new Paint();
-            aniPaint.setStyle(Paint.Style.FILL);
-            aniPaint.setColor(Color.YELLOW);
+            Paint fillPaint = new Paint();
+            Paint linePaint = new Paint();
 
-            canvas.drawPath(animationCircle, aniPaint);
+            fillPaint.setStyle(Paint.Style.FILL);
+            linePaint.setStyle(Paint.Style.STROKE);
 
-            aniPaint.setStyle(Paint.Style.STROKE);
-            aniPaint.setColor(Color.BLUE);
-            aniPaint.setStrokeWidth( 2 );
 
-            canvas.drawPath(animationCircle, aniPaint);
+            int index = 0 ;
+            for( Balloon balloon : balloons ) {
+
+                Log.d( TAG,  "[ " + index + " ] = " + balloon.toString() );
+
+                fillPaint.setColor(balloon.fillColor );
+                linePaint.setColor( balloon.lineColor );
+                Path [] shapes = balloon.getShape( currTimeMili );
+                for( Path shape : shapes ) {
+                    canvas.drawPath( shape, fillPaint );
+                    canvas.drawPath( shape, linePaint );
+                }
+
+                index ++ ;
+            }
         }
 
-        // draw text
-        Paint tPaint = new Paint();
-        tPaint.setColor(color);
-        // text size
-        tPaint.setTextSize( 30 );
+        // draw game information as a text
+        if( true ) {
+            int color = Color.BLUE;
+            // draw text
+            Paint paint = new Paint();
+            paint.setColor(color);
+            // text size
+            paint.setTextSize(30);
 
-        // text bound
-        String text = "%s (%d)";
-        text = String.format( text, GAME_NAME, paintCnt );
-        Rect bounds = new Rect();
-        tPaint.getTextBounds(text, 0, text.length(), bounds);
+            // text bound
+            String text = this.GAME_NAME + " " + paintCnt ;
+            Rect bounds = new Rect();
+            paint.getTextBounds(text, 0, text.length(), bounds);
 
-        canvas.drawText( text, width/2 - bounds.width()/2, height/2 + bounds.height()/2 , tPaint );
+            canvas.drawText(text, width / 2 - bounds.width() / 2, height / 2 + bounds.height() / 2, paint);
+        }
 
-       // canvas.drawTextOnPath(QUOTE, circle, 0, 20, tPaint);
+    }
 
+
+
+    public void playNewGame() {
+        final Handler handler = new Handler( );
+
+        final BalloonView balloonView = this ;
+        balloonView.paintCnt = 0 ;
+        balloonView.palyingGameNow = true ;
+        balloonView.gameStartTime = System.currentTimeMillis();
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if( balloonView.palyingGameNow ) {
+                    balloonView.invalidate();
+
+                    handler.postDelayed( this, timeMiliPerFrame);
+                }
+            }
+        };
+
+        handler.postDelayed(runnable, 0 );
+    }
+
+    public void stopGame() {
+        final BalloonView balloonView = this ;
+
+        final Handler hander = new Handler();
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if( balloonView.paintingNow ) {
+                    hander.postDelayed( this, timeMiliPerFrame);
+                } else {
+                    balloonView.palyingGameNow = false ;
+                    balloonView.balloons.clear();
+                }
+            }
+        };
+
+        hander.postDelayed(runnable, 0 );
     }
 
     @Override
@@ -208,4 +234,5 @@ public class BalloonView extends View {
         Log.d(TAG, msg);
         return true;
     }
+
 }

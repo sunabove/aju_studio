@@ -7,18 +7,26 @@ public class Balloon {
     float y;
     float radius;
 
+    int fillColor ;
+    int lineColor ;
+    int lineWidth ;
+
     long timeMili;
     float vy_pixel_per_sec;
     Path circle ;
 
-    public Balloon() {
+    private Balloon() {
         this.timeMili = System.currentTimeMillis();
+
+        this.fillColor = Color.RED ;
+        this.lineColor = Color.BLUE ;
+        this.lineWidth = 2 ;
     }
 
     public Path[] getShape(long currTimeMili) {
 
         long timeDiffMili = currTimeMili - timeMili ;
-        this.y = this.y + (vy_pixel_per_sec*timeDiffMili/1000.0F );
+        this.y = this.y + (vy_pixel_per_sec*(timeDiffMili/1000.0F) );
 
         Path circle = new Path();
 
@@ -30,5 +38,36 @@ public class Balloon {
         this.circle = circle ;
 
         return shapes;
+    }
+
+    @Override
+    public String toString() {
+        String msg = "Ballon x = %f, y = %f, r = %f, vy = %f";
+        msg = String.format( msg, x, y, radius, vy_pixel_per_sec );
+
+        return msg;
+    }
+
+    private static final int [] BALLOON_FILL_COLORS = { Color.RED, Color.YELLOW, Color.GRAY, Color.GREEN, Color.MAGENTA, Color.LTGRAY };
+
+    public static Balloon createBalloon( int width , int height , long timeMiliPerFrame ) {
+
+        Balloon balloon = new Balloon();
+
+        int radius = width < height ? width / 5 : height / 5;
+
+        int x = (int)( width*Math.random() );
+        balloon.x = x;
+        balloon.y = height + radius ;
+        balloon.radius = radius ;
+        balloon.timeMili = System.currentTimeMillis();
+        balloon.vy_pixel_per_sec = - height/4;
+
+        int colorIndex = (int) ( BALLOON_FILL_COLORS.length*Math.random() );
+        balloon.fillColor = BALLOON_FILL_COLORS[ colorIndex ];
+        balloon.lineColor = Color.BLUE ;
+        balloon.lineWidth = 2;
+
+        return balloon ;
     }
 }
