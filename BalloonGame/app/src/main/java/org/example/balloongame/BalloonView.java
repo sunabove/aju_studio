@@ -36,8 +36,44 @@ public class BalloonView extends View {
 
         this.paintCnt ++ ;
 
+        Context context = this.getContext();
+
         int width = canvas.getWidth();
         int height = canvas.getHeight();
+
+        // draw canvas boundary
+        if( true ) {
+            int left = 1;
+            int top = 0;
+            int right = width;
+            int bottom = height -1 ;
+            Rect rect = new Rect( left, top, right, bottom );
+
+            Paint paint = new Paint();
+            paint.setColor( Color.BLACK );
+            paint.setStyle( Paint.Style.STROKE );
+            paint.setStrokeWidth(1);
+
+            canvas.drawRect( rect, paint );
+        }
+
+        // draw back gound
+        if( true ) {
+            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ballon_view_background);
+
+            int bw = bitmap.getWidth();
+            int bh = bitmap.getHeight();
+
+            Paint paint = new Paint();
+            paint.setAntiAlias(false);
+            paint.setFilterBitmap(false);
+
+            for( int by = 0 ; by < height ; by += bh ) {
+                for( int bx = 1; bx < width ; bx += bw ){
+                    canvas.drawBitmap(bitmap, bx, by, paint);
+                }
+            }
+        }
 
         int color = Color.BLUE; // solid blue
         // Translucent purple
