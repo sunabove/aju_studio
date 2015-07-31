@@ -14,7 +14,7 @@ import android.graphics.*;
 /**
  * Created by sunabove on 2015-07-29.
  */
-public class BalloonView extends View {
+public class BalloonView extends View implements  CommonInterface {
 
     private static final String GAME_NAME = "BALLOON GAME";
     private static final String TAG = BalloonView.class.getSimpleName();
@@ -104,7 +104,8 @@ public class BalloonView extends View {
         }
 
         // draw back gound
-        if (true) {
+        boolean drawBackground = false ;
+        if ( drawBackground ) {
             Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ballon_view_background);
 
             int bw = bitmap.getWidth();
@@ -263,6 +264,8 @@ public class BalloonView extends View {
     private void paintBalloonList( ArrayList<Balloon> balloons, Canvas canvas ){
         long currTimeMili = System.currentTimeMillis();
 
+        Context context = this.getContext() ;
+
         Paint fillPaint = new Paint();
         Paint linePaint = new Paint();
 
@@ -278,14 +281,42 @@ public class BalloonView extends View {
             fillPaint.setColor( balloon.fillColor );
             linePaint.setColor( balloon.lineColor );
             linePaint.setStrokeWidth( balloon.lineWidth );
+
             Path[] shapes = balloon.getShape( currTimeMili );
             for (Path shape : shapes) {
                 canvas.drawPath(shape, fillPaint);
                 canvas.drawPath(shape, linePaint);
             }
 
+            // drawm game item bitmap
+            GameItem gameItem = balloon.gameItem ;
+            if( gameItem != GameItem.NONE ) {
+                Bitmap bitmap = this.getItemBitmap(gameItem.drawableResourceId);
+
+                int bw = bitmap.getWidth();
+                int bh = bitmap.getHeight();
+
+                Paint paint = new Paint();
+
+                canvas.drawBitmap( bitmap, balloon.x - bw/2 , balloon.y - bh/2, paint );
+            }
+
             index++;
         }
+    }
+
+    private Hashtable<Integer, Bitmap> bitmapTable = new Hashtable<Integer, Bitmap>();
+
+    private Bitmap getItemBitmap( int resId ) {
+        Bitmap bitmap = bitmapTable.get( resId );
+        if( bitmap == null ) {
+            bitmap = BitmapFactory.decodeResource( this.getContext().getResources(), resId );
+            if( bitmap != null ) {
+                bitmapTable.put( resId, bitmap );
+            }
+        }
+
+        return bitmap ;
     }
 
     public void playNewGame(BalloonGameActivity balloonGameActivity) {

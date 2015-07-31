@@ -2,9 +2,10 @@ package org.example.balloongame;
 
 import android.graphics.*;
 
+import java.lang.reflect.GenericArrayType;
 import java.util.ArrayList;
 
-public class Balloon {
+public class Balloon implements  CommonInterface {
 
     float x;
     float y;
@@ -21,6 +22,8 @@ public class Balloon {
     float vy_pixel_per_sec;
     Path circle ;
 
+    GameItem gameItem ;
+
     private Balloon() {
         this.timeMili = System.currentTimeMillis();
 
@@ -30,6 +33,8 @@ public class Balloon {
 
         this.isClicked = false ;
         this.isSticked = false ;
+
+        this.gameItem = GameItem.NONE ;
     }
 
     public Path[] getShape(long currTimeMili) {
@@ -123,6 +128,18 @@ public class Balloon {
         float vMax = height/5 ;
         float vy_pixel_per_sec = - (float)( vMin + (vMax - vMin)*Math.random() ) ;
 
+        GameItem gameItem = GameItem.NONE ;
+
+        if( true ) {
+            double itemId = Math.random() ;
+
+            if( itemId < 0.05 ) {
+                gameItem = GameItem.BOMB ;
+            } else if( 0.5 < itemId && itemId < 0.55 ) {
+                gameItem = GameItem.CLOCK ;
+            }
+        }
+
         balloon.x = x;
         balloon.y = height + radius ;
         balloon.radius = radius ;
@@ -133,6 +150,7 @@ public class Balloon {
         balloon.fillColor = BALLOON_FILL_COLORS[ colorIndex ];
         balloon.lineColor = Color.BLUE ;
         balloon.lineWidth = 2 ;
+        balloon.gameItem = gameItem ;
 
         return balloon ;
     }
