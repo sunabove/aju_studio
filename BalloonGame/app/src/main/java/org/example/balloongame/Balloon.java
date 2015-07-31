@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class Balloon implements  CommonInterface {
 
-    static long TOTAL_PAUSE_TIME = 0 ;
     static long PAUSE_TIME = 0 ;
     static long PAUSE_CURR_TIME = 0 ;
 
@@ -45,7 +44,7 @@ public class Balloon implements  CommonInterface {
 
         if( PAUSE_TIME > 0 ) {
             this.timeMili = currTimeMili ;
-            
+
             Path[] shapes = { this.circle };
             return shapes ;
         }

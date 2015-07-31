@@ -173,10 +173,14 @@ public class BalloonView extends View implements  CommonInterface {
             // end of building stick list
 
             // check whether if this game ended
+            float maxBalloonHeight = stickList.getMaxVerticalPosition();
+
+            /*
             float maxBalloonHeight = 0 ;
-            for( Balloon balloon : stickList ) {
+            for( Balloon balloon : this ) {
                 maxBalloonHeight = balloon.y > maxBalloonHeight ? balloon.y : maxBalloonHeight ;
-            }
+             }
+             */
 
             if( maxBalloonHeight > 0 ) {
                 if( stickList.size() > 0 ) {
@@ -333,7 +337,6 @@ public class BalloonView extends View implements  CommonInterface {
         balloonView.gameStartTime = System.currentTimeMillis();
 
         Balloon.PAUSE_TIME = 0 ;
-        Balloon.TOTAL_PAUSE_TIME = 0 ;
         Balloon.PAUSE_CURR_TIME = 0 ;
 
         balloonView.balloons.clear();
@@ -352,7 +355,6 @@ public class BalloonView extends View implements  CommonInterface {
                         long diff = now - then ;
 
                         Balloon.PAUSE_TIME = Balloon.PAUSE_TIME - diff ;
-                        Balloon.TOTAL_PAUSE_TIME += diff ;
 
                         Balloon.PAUSE_CURR_TIME = now ;
                     }
