@@ -58,9 +58,19 @@ public class BalloonGameActivity extends Activity {
         this.stopGameBtn.setEnabled( false );
     }
 
-     public void setGameScore( int score , int maxScore ) {
-         this.scoreTv.setText("" + score);
-         this.maxScoreTv.setText("" + maxScore);
+     public void setGameScore( final int score , final int maxScore ) {
+         Handler handler = new Handler();
+
+         Runnable runnable = new Runnable() {
+             @Override
+             public void run() {
+                 scoreTv.setText("" + score);
+                 maxScoreTv.setText("" + maxScore);
+             }
+         };
+
+         handler.postDelayed(runnable, 0 );
+
      }
 
      public void setGameEnded( ) {
