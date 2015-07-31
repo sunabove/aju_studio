@@ -125,6 +125,13 @@ public class Balloon implements  CommonInterface {
         return false ;
     }
 
+    public float getDistum( Balloon balloon ) {
+        float dx = this.x - balloon.x ;
+        float dy = this.y - balloon.y ;
+
+        return dx*dx + dy*dy ;
+    }
+
     private static final int [] BALLOON_FILL_COLORS = { Color.RED, Color.YELLOW, Color.GREEN, Color.MAGENTA, Color.CYAN };
 
     public static Balloon createBalloon( int width , int height , long timeMiliPerFrame ) {

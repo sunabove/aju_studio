@@ -125,10 +125,17 @@ public class BalloonView extends View implements  CommonInterface {
             // clear balloons clicked
             BalloonList clickedList = new BalloonList();
 
+            Balloon bombBalloon = null ;
+
             for( Balloon balloon : balloons ) {
                 if (balloon.isClicked) {
                     this.score++;
                     clickedList.add(balloon);
+
+                    // set bomb balloon
+                    if( balloon.gameItem == GameItem.BOMB ) {
+                        bombBalloon = balloon ;
+                    }
                 }
             }
 
@@ -140,6 +147,13 @@ public class BalloonView extends View implements  CommonInterface {
 
             for (Balloon balloon : clickedList) {
                 balloons.remove(balloon);
+            }
+
+            // remove bolloon inside bomb area
+            if( bombBalloon != null ) {
+                BalloonList balloonsInsideBombArea = balloons.getBalloonListInsideBombArea( bombBalloon );
+
+                balloons.removeAll( balloonsInsideBombArea );
             }
 
             // build stick list
