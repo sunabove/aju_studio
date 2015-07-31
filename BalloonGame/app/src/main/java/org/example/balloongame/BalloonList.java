@@ -25,7 +25,7 @@ public class BalloonList extends ArrayList<Balloon> {
     public BalloonList getBalloonListInsideBombArea( Balloon bombBalloon ) {
         BalloonList balloonList = new BalloonList();
 
-        float circleDistum = 4* bombBalloon.radius *bombBalloon.radius ;
+        float circleDistum = 9*bombBalloon.radius *bombBalloon.radius ;
 
         for( Balloon balloon : this ) {
             if( bombBalloon.getDistum( balloon) < circleDistum ) {
