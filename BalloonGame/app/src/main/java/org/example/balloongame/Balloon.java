@@ -105,7 +105,7 @@ public class Balloon implements  CommonInterface {
      * @param balloons
      * @return
      */
-    public boolean isSticked( ArrayList<Balloon> balloons ) {
+    public boolean isSticked( BalloonList balloons ) {
 
         for( Balloon balloon : balloons ) {
             if( this.isSticked( balloon )) {

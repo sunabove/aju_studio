@@ -27,8 +27,9 @@ public class BalloonView extends View implements  CommonInterface {
     long gameStartTime;
     int score;
     int maxScore;
-    ArrayList<Balloon> balloons;
-    ArrayList<Balloon> stickList ;
+
+    BalloonList balloons;
+    BalloonList stickList ;
 
     BalloonGameActivity balloonGameActivity;
 
@@ -51,8 +52,8 @@ public class BalloonView extends View implements  CommonInterface {
         this.timeMiliPerFrame = 200;
         this.palyingGameNow = false;
         this.paintingNow = false;
-        this.balloons = new ArrayList<Balloon>();
-        this.stickList = new ArrayList<Balloon>();
+        this.balloons = new BalloonList();
+        this.stickList = new BalloonList();
     }
 
     @Override
@@ -76,8 +77,8 @@ public class BalloonView extends View implements  CommonInterface {
 
         this.paintCnt++;
 
-        ArrayList<Balloon> balloons = this.balloons;
-        ArrayList<Balloon> stickList = this.stickList;
+        BalloonList balloons = this.balloons;
+        BalloonList stickList = this.stickList;
 
         int paintCnt = this.paintCnt;
         long timeMiliPerFrame = this.timeMiliPerFrame;
@@ -104,7 +105,7 @@ public class BalloonView extends View implements  CommonInterface {
         }
 
         // draw back gound
-        boolean drawBackground = false ;
+        boolean drawBackground = true ;
         if ( drawBackground ) {
             Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ballon_view_background);
 
@@ -124,7 +125,7 @@ public class BalloonView extends View implements  CommonInterface {
 
         if (palyingGameNow) {
             // clear balloons clicked
-            ArrayList<Balloon> clicedList = new ArrayList<Balloon>();
+            BalloonList clicedList = new BalloonList();
 
             for (Balloon balloon : balloons) {
                 if (balloon.isClicked) {
@@ -147,7 +148,7 @@ public class BalloonView extends View implements  CommonInterface {
             }
 
             // build stick list
-            ArrayList<Balloon> zeroList = new ArrayList<Balloon>();
+            BalloonList zeroList = new BalloonList();
 
             for (Balloon balloon : balloons) {
                 if( balloon.y <= balloon.radius ) {
@@ -261,7 +262,7 @@ public class BalloonView extends View implements  CommonInterface {
 
     }
 
-    private void paintBalloonList( ArrayList<Balloon> balloons, Canvas canvas ){
+    private void paintBalloonList( BalloonList balloons, Canvas canvas ){
         long currTimeMili = System.currentTimeMillis();
 
         Context context = this.getContext() ;
@@ -382,7 +383,7 @@ public class BalloonView extends View implements  CommonInterface {
         // set balloon as click if it includes click coordinat
 
         if (palyingGameNow) {
-            ArrayList<Balloon> balloons = this.balloons;
+            BalloonList balloons = this.balloons;
             for (Balloon balloon : balloons) {
                 if (balloon.includes(clickX, clickY)) {
                     balloon.isClicked = true;
