@@ -331,6 +331,7 @@ public class BalloonView extends View implements  CommonInterface {
         balloonView.palyingGameNow = true;
         balloonView.score = 0;
         balloonView.gameStartTime = System.currentTimeMillis();
+
         Balloon.PAUSE_TIME = 0 ;
         Balloon.TOTAL_PAUSE_TIME = 0 ;
         Balloon.PAUSE_CURR_TIME = 0 ;

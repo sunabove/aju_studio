@@ -44,6 +44,8 @@ public class Balloon implements  CommonInterface {
     public Path[] getShape(long currTimeMili) {
 
         if( PAUSE_TIME > 0 ) {
+            this.timeMili = currTimeMili ;
+            
             Path[] shapes = { this.circle };
             return shapes ;
         }
@@ -53,7 +55,7 @@ public class Balloon implements  CommonInterface {
             return shapes ;
         }
 
-        long timeDiffMili = currTimeMili - timeMili - TOTAL_PAUSE_TIME ;
+        long timeDiffMili = currTimeMili - timeMili ;
 
         this.y = this.y + (vy_pixel_per_sec * (timeDiffMili / 1000.0F));
 
