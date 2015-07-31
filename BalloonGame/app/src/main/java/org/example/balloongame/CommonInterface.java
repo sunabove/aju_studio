@@ -8,7 +8,7 @@ public interface CommonInterface {
 
         public int drawableResourceId ;
 
-        GameItem(int drawableId) {
+        GameItem(int drawableResourceId) {
             this.drawableResourceId = drawableResourceId ;
         }
     }
