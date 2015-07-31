@@ -21,9 +21,12 @@ public class Balloon implements  CommonInterface {
     int lineColor ;
     int lineWidth ;
 
+    int bombAreaLineColor ;
+
     long timeMili;
     float vy_pixel_per_sec;
     Path circle ;
+    Path bombAreaCircle ;
 
     GameItem gameItem ;
 
@@ -32,6 +35,7 @@ public class Balloon implements  CommonInterface {
 
         this.fillColor = Color.RED ;
         this.lineColor = Color.BLUE ;
+        this.bombAreaLineColor = Color.RED ;
         this.lineWidth = 2 ;
 
         this.isClicked = false ;
@@ -45,12 +49,12 @@ public class Balloon implements  CommonInterface {
         if( PAUSE_TIME > 0 ) {
             this.timeMili = currTimeMili ;
 
-            Path[] shapes = { this.circle };
+            Path[] shapes = { this.circle, this.bombAreaCircle };
             return shapes ;
         }
 
         if( this.isSticked && this.circle != null ) {
-            Path[] shapes = { this.circle };
+            Path[] shapes = { this.circle, this.bombAreaCircle };
             return shapes ;
         }
 
@@ -58,14 +62,22 @@ public class Balloon implements  CommonInterface {
 
         this.y = this.y + (vy_pixel_per_sec * (timeDiffMili / 1000.0F));
 
+        // balloon circle
         Path circle = new Path();
-
         circle.addCircle(x, y, radius, Path.Direction.CW);
 
-        Path[] shapes = {circle};
+        // bomb area circle
+        Path bombAreaCircle = null ;
+        if( ! this.isSticked && gameItem == GameItem.BOMB  ) {
+            bombAreaCircle = new Path();
+            bombAreaCircle.addCircle(x, y, 2*radius, Path.Direction.CW);
+        }
+
+        Path[] shapes = {circle , bombAreaCircle };
 
         this.timeMili = currTimeMili;
         this.circle = circle ;
+        this.bombAreaCircle = bombAreaCircle ;
 
         return shapes;
     }
@@ -172,6 +184,7 @@ public class Balloon implements  CommonInterface {
         balloon.lineColor = Color.BLUE ;
         balloon.lineWidth = 2 ;
         balloon.gameItem = gameItem ;
+        balloon.bombAreaLineColor = Color.RED ;
 
         return balloon ;
     }

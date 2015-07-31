@@ -284,25 +284,40 @@ public class BalloonView extends View implements  CommonInterface {
 
         Paint fillPaint = new Paint();
         Paint linePaint = new Paint();
+        Paint dashPaint = new Paint();
 
         fillPaint.setStyle(Paint.Style.FILL);
+
         linePaint.setStyle(Paint.Style.STROKE);
-        linePaint.setAntiAlias( true );
+        linePaint.setAntiAlias(true);
+
+        dashPaint.setStyle(Paint.Style.STROKE);
+        dashPaint.setPathEffect(new DashPathEffect(new float[] {10,5}, 0));
 
         int index = 0;
         for (Balloon balloon : balloons) {
 
             Log.d(TAG, "[ " + index + " ] = " + balloon.toString());
 
-            fillPaint.setColor( balloon.fillColor );
+            fillPaint.setColor(balloon.fillColor);
             linePaint.setColor( balloon.lineColor );
-            linePaint.setStrokeWidth( balloon.lineWidth );
+            linePaint.setStrokeWidth(balloon.lineWidth);
+            dashPaint.setColor( balloon.bombAreaLineColor );
+            dashPaint.setStrokeWidth( balloon.lineWidth );
 
             Path[] shapes = balloon.getShape( currTimeMili );
-            for (Path shape : shapes) {
+            Path shape ;
+            for( int i = 0, iLen = shapes.length ; i < iLen ; i ++ ) {
+                shape = shapes[ i ] ;
                 if( shape != null ) {
-                    canvas.drawPath(shape, fillPaint);
-                    canvas.drawPath(shape, linePaint);
+                    if( i == 0 ) {
+                        // draw balloon circle
+                        canvas.drawPath(shape, fillPaint);
+                        canvas.drawPath(shape, linePaint);
+                    } else if( i > 0 ) {
+                        // draw bomb area circle
+                        canvas.drawPath( shape, dashPaint );
+                    }
                 }
             }
 
