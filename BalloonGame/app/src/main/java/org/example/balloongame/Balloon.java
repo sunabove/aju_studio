@@ -7,6 +7,10 @@ import java.util.ArrayList;
 
 public class Balloon implements  CommonInterface {
 
+    static long TOTAL_PAUSE_TIME = 0 ;
+    static long PAUSE_TIME = 0 ;
+    static long PAUSE_CURR_TIME = 0 ;
+
     float x;
     float y;
     float radius;
@@ -39,12 +43,17 @@ public class Balloon implements  CommonInterface {
 
     public Path[] getShape(long currTimeMili) {
 
+        if( PAUSE_TIME > 0 ) {
+            Path[] shapes = { this.circle };
+            return shapes ;
+        }
+
         if( this.isSticked && this.circle != null ) {
             Path[] shapes = { this.circle };
             return shapes ;
         }
 
-        long timeDiffMili = currTimeMili - timeMili ;
+        long timeDiffMili = currTimeMili - timeMili - TOTAL_PAUSE_TIME ;
 
         this.y = this.y + (vy_pixel_per_sec * (timeDiffMili / 1000.0F));
 
@@ -118,6 +127,10 @@ public class Balloon implements  CommonInterface {
     private static final int [] BALLOON_FILL_COLORS = { Color.RED, Color.YELLOW, Color.GREEN, Color.MAGENTA, Color.CYAN };
 
     public static Balloon createBalloon( int width , int height , long timeMiliPerFrame ) {
+
+        if( PAUSE_TIME > 0 ) {
+            return null ;
+        }
 
         Balloon balloon = new Balloon();
 

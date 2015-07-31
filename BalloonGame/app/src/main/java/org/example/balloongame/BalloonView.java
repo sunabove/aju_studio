@@ -4,10 +4,8 @@ import java.util.*;
 
 import android.content.*;
 import android.os.*;
-import android.support.annotation.ArrayRes;
 import android.util.*;
 import android.view.*;
-import android.widget.*;
 
 import android.graphics.*;
 
@@ -125,15 +123,12 @@ public class BalloonView extends View implements  CommonInterface {
 
         if (palyingGameNow) {
             // clear balloons clicked
-            BalloonList clicedList = new BalloonList();
+            BalloonList clickedList = new BalloonList();
 
-            for (Balloon balloon : balloons) {
+            for( Balloon balloon : balloons ) {
                 if (balloon.isClicked) {
                     this.score++;
-                }
-
-                if (balloon.isClicked || (balloon.y <= -balloon.radius)) {
-                    clicedList.add(balloon);
+                    clickedList.add(balloon);
                 }
             }
 
@@ -143,7 +138,7 @@ public class BalloonView extends View implements  CommonInterface {
                 this.balloonGameActivity.setGameScore(this.score, this.maxScore);
             }
 
-            for (Balloon balloon : clicedList) {
+            for (Balloon balloon : clickedList) {
                 balloons.remove(balloon);
             }
 
@@ -200,7 +195,9 @@ public class BalloonView extends View implements  CommonInterface {
             // generate ballons per three frames
             if ( this.palyingGameNow && paintCnt % 4 == 0) {
                 Balloon newBallon = Balloon.createBalloon(width, height, timeMiliPerFrame);
-                balloons.add(newBallon);
+                if( newBallon != null ) {
+                    balloons.add(newBallon);
+                }
             }
 
         }
@@ -285,8 +282,10 @@ public class BalloonView extends View implements  CommonInterface {
 
             Path[] shapes = balloon.getShape( currTimeMili );
             for (Path shape : shapes) {
-                canvas.drawPath(shape, fillPaint);
-                canvas.drawPath(shape, linePaint);
+                if( shape != null ) {
+                    canvas.drawPath(shape, fillPaint);
+                    canvas.drawPath(shape, linePaint);
+                }
             }
 
             // drawm game item bitmap
@@ -321,6 +320,7 @@ public class BalloonView extends View implements  CommonInterface {
     }
 
     public void playNewGame(BalloonGameActivity balloonGameActivity) {
+        // paly a new game
 
         this.balloonGameActivity = balloonGameActivity;
 
@@ -331,6 +331,9 @@ public class BalloonView extends View implements  CommonInterface {
         balloonView.palyingGameNow = true;
         balloonView.score = 0;
         balloonView.gameStartTime = System.currentTimeMillis();
+        Balloon.PAUSE_TIME = 0 ;
+        Balloon.TOTAL_PAUSE_TIME = 0 ;
+        Balloon.PAUSE_CURR_TIME = 0 ;
 
         balloonView.balloons.clear();
         balloonView.stickList.clear();
@@ -339,6 +342,20 @@ public class BalloonView extends View implements  CommonInterface {
             @Override
             public void run() {
                 if (balloonView.palyingGameNow) {
+
+                    // calculate game pause time
+                    if( Balloon.PAUSE_TIME > 0 ) {
+                        long now = System.currentTimeMillis() ;
+                        long then = Balloon.PAUSE_CURR_TIME;
+
+                        long diff = now - then ;
+
+                        Balloon.PAUSE_TIME = Balloon.PAUSE_TIME - diff ;
+                        Balloon.TOTAL_PAUSE_TIME += diff ;
+
+                        Balloon.PAUSE_CURR_TIME = now ;
+                    }
+
                     balloonView.invalidate();
 
                     handler.postDelayed(this, timeMiliPerFrame);
@@ -350,6 +367,8 @@ public class BalloonView extends View implements  CommonInterface {
     }
 
     public void stopGame() {
+        // Stop current game
+
         final BalloonView balloonView = this;
 
         balloonView.palyingGameNow = false;
@@ -383,11 +402,22 @@ public class BalloonView extends View implements  CommonInterface {
         // set balloon as click if it includes click coordinat
 
         if (palyingGameNow) {
+            boolean isClockItemBalloonClicked = false ;
             BalloonList balloons = this.balloons;
             for (Balloon balloon : balloons) {
                 if (balloon.includes(clickX, clickY)) {
                     balloon.isClicked = true;
+
+                    if( balloon.gameItem == GameItem.CLOCK ) {
+                        isClockItemBalloonClicked = true;
+                    }
                 }
+            }
+
+            // stops the balloon move ment and creating balloons
+            if( isClockItemBalloonClicked ) {
+                Balloon.PAUSE_TIME = 3000 ;
+                Balloon.PAUSE_CURR_TIME = System.currentTimeMillis() ;
             }
         }
 
